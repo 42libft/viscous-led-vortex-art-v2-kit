@@ -1,0 +1,18 @@
+# Dependencies and build output
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Local environment
+.DS_Store
+*.local
+
+# Visual references are observation material, not runtime or GitHub Pages assets.
+visual-references/**/photos/
+visual-references/**/videos/
+visual-references/**/frames/
+visual-references/**/*.{jpg,jpeg,png,gif,webp,avif,mp4,mov,m4v,avi}
+
+# Local visual QA output
+test-results/
