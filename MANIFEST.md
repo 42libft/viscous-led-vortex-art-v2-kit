@@ -22,6 +22,19 @@
 - `09_acceptance_checklist.md`: 完成判定チェックリスト。
 - `10_agent_workflow_and_prompts.md`: エージェント運用と投入プロンプト。
 - `11_open_questions_and_tuning_log.md`: 未決事項・調整ログ。
+- `12_phase6_5_visual_system_redesign.md`: Pattern / Color / Move / Composition / FireflySystem / Effect再設計。
+- `13_parallel_development_handoff.md`: 並列開発と担当境界の引き継ぎ。
+- `14_github_pages_and_git.md`: GitHub PagesとGit運用。
+- `15_project_closure_and_reuse_handoff.md`: 模倣開発終了と次作Liquid Universeへの流用引き継ぎ。
+
+## handoff
+
+- `liquid-universe-next/README.md`: 次作へ渡すスターターパッケージの使い方。
+- `liquid-universe-next/AGENTS.md`: 次作実装エージェントへの初期指示。
+- `liquid-universe-next/docs/concept-brief.md`: Liquid Universeのコンセプト整理。
+- `liquid-universe-next/docs/reuse-map.md`: 流用するファイルと捨てるものの対応表。
+- `liquid-universe-next/reusable-files.txt`: パッケージへ含めるファイル一覧。
+- `create-liquid-universe-package.sh`: 上記一覧からローカルtarballを生成するスクリプト。
 
 ## references
 

@@ -16,3 +16,7 @@ visual-references/**/*.{jpg,jpeg,png,gif,webp,avif,mp4,mov,m4v,avi}
 
 # Local visual QA output
 test-results/
+
+# Generated handoff packages are local delivery artifacts.
+handoff/.package-build/
+handoff/artifacts/

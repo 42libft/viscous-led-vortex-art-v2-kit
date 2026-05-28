@@ -490,6 +490,35 @@
 - 実画面でglowの呼吸感、specular trail、grain/scanlineのちらつきが強すぎないか確認する。
 - 重く感じる場合は、`alife.glsl` 内のswarm/slime loop数を先に落として調整する。
 
+### 2026-05-29
+
+対象:
+
+- Project closure / Liquid Universe handoff
+
+変更内容:
+
+- 蒼氓蟲譜の模倣開発としての継続を終了し、次作Liquid Universeへ流用する凍結点として扱う方針に変更。
+- `docs/15_project_closure_and_reuse_handoff.md` を追加し、流用する構造、捨てる模倣要素、次作の初期Phaseを整理。
+- `handoff/liquid-universe-next/` に次作用README、AGENTS、concept brief、reuse map、パッケージ対象ファイル一覧を追加。
+- `handoff/create-liquid-universe-package.sh` で、次作へ渡すローカルtarballを再生成できるようにした。
+
+理由:
+
+- リアルタイム生成かつ更新され続ける作品を精密に模倣しても、似て非なるものになるため。
+- 「リキッド」を固定境界が信頼できなくなる状態として再解釈し、短冊固定ではなく変化するディスプレイ枠を持つ独自作品へ進むため。
+- 黒円、Vortex、FireflySystem、Effect、責務分離など、次作でも有効な構造だけを持ち越すため。
+
+結果:
+
+- 現行プロジェクトは、模倣の完成を目指す開発対象ではなく、次作へ渡す構造の参照元になった。
+
+次に試すこと:
+
+- 次プロジェクトを新規作成し、まず `Panel` を `LiquidFrameSystem` へ置き換える。
+- `reference` / `original` の分類を、次作の作品語彙に合う `lineage` や `ecosystem` のようなメタデータへ改名する。
+- 旧Reference Modeは初期表示から外し、独自Patternの実験用サンプルとして必要な部分だけ読む。
+
 ### YYYY-MM-DD
 
 対象:

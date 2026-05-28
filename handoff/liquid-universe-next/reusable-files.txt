@@ -1,0 +1,40 @@
+# Root project shell
+.gitignore
+.github/workflows/ci.yml
+.github/workflows/pages.yml
+.node-version
+index.html
+package-lock.json
+package.json
+tsconfig.json
+vite.config.ts
+public
+
+# Source code
+src/main.ts
+src/app
+src/colors
+src/composition
+src/display
+src/effects
+src/fireflies
+src/motion
+src/patterns
+src/renderer
+src/settings
+src/shaders/buildShader.ts
+src/shaders/common
+src/shaders/variants
+src/simulation
+src/styles
+src/ui
+src/vite-env.d.ts
+
+# Useful old docs for implementation structure
+docs/03_architecture.md
+docs/05_blackhole_vortex_spec.md
+docs/06_random_auto_director.md
+docs/07_shader_design.md
+docs/12_phase6_5_visual_system_redesign.md
+docs/15_project_closure_and_reuse_handoff.md
+templates/preset_template.ts

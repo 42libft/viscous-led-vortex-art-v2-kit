@@ -9,6 +9,19 @@
 - 2026-05-27: Phase 6.5（Visual System再設計）まで実装済み。
 - 現時点では「中央短冊 + 3つの黒円 + Photon Ring + Gravity Lens + Mode/Preset選択GUI + Reference Mode候補2種 + Original WIP 1種 + Color/Move/Composition/FireflySystem/Effect分離」までで、Autoは未実装。
 - 並列開発の担当境界は `docs/13_parallel_development_handoff.md` に整理済み。
+- 2026-05-29: 模倣開発としての継続はここで終了。次作「Liquid Universe」へ流用するための引き継ぎは `docs/15_project_closure_and_reuse_handoff.md` と `handoff/liquid-universe-next/` に整理済み。
+
+## 次作への引き継ぎ
+
+このリポジトリは、今後は蒼氓蟲譜の再現精度を上げるためではなく、次の独自作品へ構造を渡すための凍結点として扱います。
+
+次作へ渡すローカルパッケージは次で作成できます。
+
+```sh
+./handoff/create-liquid-universe-package.sh
+```
+
+生成物は `handoff/artifacts/` に置かれます。このディレクトリはGit管理しません。
 
 ## 開発
 
