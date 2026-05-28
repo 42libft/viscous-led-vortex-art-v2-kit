@@ -25,6 +25,7 @@ export class VortexSystem {
       pos: new Float32Array(3 * 2),
       vel: new Float32Array(3 * 2),
       radius: new Float32Array(3),
+      coreScale: new Float32Array(3),
       spin: new Float32Array(3),
     };
     this.syncUniforms();
@@ -50,6 +51,7 @@ export class VortexSystem {
       this.uniforms.vel[i * 2 + 0] = v.velocity.x;
       this.uniforms.vel[i * 2 + 1] = v.velocity.y;
       this.uniforms.radius[i] = v.radius;
+      this.uniforms.coreScale[i] = v.coreScale;
       this.uniforms.spin[i] = v.spin;
     }
   }

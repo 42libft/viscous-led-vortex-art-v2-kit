@@ -41,6 +41,7 @@ BlackHoleField sampleBlackHoleField(
   vec2 center,
   vec2 velocity,
   float radius,
+  float vortexCoreScale,
   float spin,
   float visualAspect,
   float time,
@@ -67,16 +68,23 @@ BlackHoleField sampleBlackHoleField(
   float photonAngularFreq = blackHoleParams1.w;
 
   float styledRadius = radius * coreScale;
-  float coreEdge = styledRadius * 0.78;
-  float eventHorizon = 1.0 - smoothstep(coreEdge * 0.985, coreEdge * 1.025, dist);
-  float outsideCore = smoothstep(coreEdge * 1.005, coreEdge * 1.08, dist);
-
-  float photonRing =
-    smoothstep(coreEdge * 1.03, coreEdge * 1.14, dist) *
-    (1.0 - smoothstep(coreEdge * 1.62, coreEdge * 1.92, dist));
-  float orbitBand =
-    smoothstep(coreEdge * 1.08, coreEdge * 1.22, dist) *
-    (1.0 - smoothstep(radius * 4.2, radius * 5.15, dist));
+  float fieldBaseEdge = styledRadius * 0.48;
+  float coreEdge = fieldBaseEdge * vortexCoreScale;
+  float coreAa = max(fwidth(dist) * 1.35, radius * 0.004);
+  float eventHorizon = 1.0 - smoothstep(coreEdge - coreAa, coreEdge + coreAa, dist);
+  float outsideCore = smoothstep(coreEdge + coreAa * 0.2, coreEdge + coreAa * 0.95, dist);
+  float fieldInner = coreEdge + coreAa * 0.35;
+  float fieldOuter = fieldInner + (fieldBaseEdge * 2.55 - fieldBaseEdge * 1.28) * 1.69;
+  float fieldWidth = max(fieldOuter - fieldInner, radius * 0.001);
+  float fieldT = clamp((dist - fieldInner) / fieldWidth, 0.0, 1.0);
+  float fieldAa = max(fwidth(dist) * 2.4, radius * 0.012);
+  float gravityBand =
+    smoothstep(fieldInner, fieldInner + fieldAa, dist) *
+    (1.0 - smoothstep(fieldOuter - fieldAa, fieldOuter, dist)) *
+    outsideCore;
+  float orbitCenter = mix(fieldInner, fieldOuter, 0.54);
+  float orbitWidth = max(fieldWidth * 0.47, radius * 0.001);
+  float orbitBand = exp(-pow((dist - orbitCenter) / orbitWidth, 2.0)) * gravityBand;
 
   float phase = dot(center, vec2(37.7, 91.3)) + spin * 5.17;
   float slowA = 0.5 + 0.5 * sin(time * 0.013 + phase);
@@ -84,42 +92,72 @@ BlackHoleField sampleBlackHoleField(
   float slowC = 0.5 + 0.5 * sin(time * 0.019 - phase * 0.41);
   float gravitySurge = slowA * 0.48 + slowB * 0.34 + slowC * 0.18;
   gravitySurge = gravitySurge * gravitySurge * (3.0 - 2.0 * gravitySurge);
-  float gravityBreath = 0.74 + gravitySurge * 1.28;
+  float gravityBreath = 0.88 + gravitySurge * 0.62;
   float dynamicGravityStrength = gravityStrength * gravityBreath;
-  float dynamicSwirlStrength = swirlStrength * (0.86 + gravitySurge * 1.85);
-  float dynamicOrbitSpeed = photonOrbitSpeed * (0.72 + gravitySurge * 3.45);
-
-  float fieldBoundary = 1.0 - smoothstep(radius * 4.25, radius * 5.3, dist);
-  float gravity = exp(-(dist * dist) / (radius * radius * gravityFalloff)) * fieldBoundary * outsideCore;
-  float accretionGravity = exp(-pow((dist - coreEdge * 1.56) / max(radius * 1.32, 0.0001), 2.0)) * outsideCore;
+  float dynamicSwirlStrength = swirlStrength * (0.94 + gravitySurge * 0.94);
+  float dynamicOrbitSpeed = photonOrbitSpeed * (0.82 + gravitySurge * 1.55);
 
   float travelDot = dot(radial, velocityDir);
+  float lateralDot = velocityDir.x * radial.y - velocityDir.y * radial.x;
   float speedWeight = smoothstep(0.003, 0.045, speed);
   float frontBias = smoothstep(-0.18, 0.92, travelDot);
   float rearBias = smoothstep(-0.12, 0.94, -travelDot);
-  float orbitBias = 0.72 + 0.18 * frontBias + 0.32 * rearBias;
-  float tailStretch = rearBias * speedWeight * accretionGravity * fieldBoundary;
+  float sideGate = smoothstep(0.08, 0.62, abs(lateralDot));
+  float frontFork = frontBias * sideGate * speedWeight * gravityBand;
+  float rearWake = rearBias * sideGate * speedWeight * gravityBand;
 
-  float orbitWave = 0.5 + 0.5 * sin(angle * photonAngularFreq + time * 4.2 * dynamicOrbitSpeed * spin);
-  float orbitShear = orbitBand * accretionGravity * orbitBias;
+  float strandA = sin(angle * 2.1 + fieldT * 18.0 - time * 0.11 * dynamicOrbitSpeed * spin + phase);
+  float strandB = sin(angle * 4.7 - fieldT * 12.5 + time * 0.07 * (1.0 + gravitySurge) - phase * 0.37);
+  float strandC = sin((angle + fieldT * 0.85) * photonAngularFreq + time * 0.42 * dynamicOrbitSpeed * spin);
+  float strandSignal = strandA * 0.5 + strandB * 0.32 + strandC * 0.18;
+  float strandGate = smoothstep(-0.16, 0.54, strandSignal);
+  float matterStrands = mix(0.16, 1.2, strandGate);
+  float outerCapture =
+    smoothstep(0.18, 0.72, fieldT) *
+    (1.0 - smoothstep(0.8, 1.0, fieldT)) *
+    gravityBand *
+    mix(0.18, 1.0, strandGate);
+  float innerCompression =
+    (1.0 - smoothstep(0.0, 0.38, fieldT)) *
+    gravityBand *
+    mix(0.14, 1.0, strandGate);
+  float directionGate = max(frontFork, rearWake);
+  float orbitMatter = gravityBand * (0.04 + orbitBand * 0.62 + directionGate * 0.34) * matterStrands;
+  float orbitPower =
+    photonRingStrength *
+    photonRingWarp *
+    dynamicSwirlStrength *
+    (0.72 + gravitySurge * 1.08);
+
   vec2 lensMetric =
-    radial * gravity * -0.023 * dynamicGravityStrength +
-    tangent * orbitShear * 0.035 * dynamicSwirlStrength;
-  lensMetric += tangent * tailStretch * 0.024 * dynamicSwirlStrength;
-  lensMetric += -velocityDir * tailStretch * 0.018 * dynamicGravityStrength;
+    radial * (outerCapture * 0.004 + innerCompression * 0.007) * dynamicGravityStrength +
+    tangent * orbitMatter * 0.03 * orbitPower;
+  lensMetric += tangent * frontFork * 0.044 * orbitPower;
+  lensMetric += tangent * rearWake * 0.068 * orbitPower;
+  lensMetric += velocityDir * frontFork * 0.006 * dynamicGravityStrength;
+  lensMetric += -velocityDir * rearWake * 0.018 * dynamicGravityStrength;
 
+  float orbitRipple = 0.64 + 0.36 * sin(
+    angle * photonAngularFreq +
+    fieldT * 16.0 +
+    time * 0.58 * dynamicOrbitSpeed * spin +
+    phase
+  );
   vec2 orbitMetric =
-    tangent * photonRing * photonRingWarp * (0.018 + 0.036 * orbitWave) * (1.0 + gravitySurge * 1.8);
-  orbitMetric += tangent * orbitShear * photonRingWarp * 0.028 * dynamicSwirlStrength;
-  orbitMetric += -velocityDir * tailStretch * photonRingWarp * 0.009 * (1.0 + gravitySurge * 0.8);
+    tangent * orbitMatter * photonRingWarp * photonRingStrength * (0.014 + 0.016 * orbitRipple) *
+    (1.0 + gravitySurge * 0.72);
+  orbitMetric += radial * outerCapture * 0.003 * dynamicGravityStrength;
+  orbitMetric += tangent * frontFork * photonRingWarp * photonRingStrength * 0.025;
+  orbitMetric += tangent * rearWake * photonRingWarp * photonRingStrength * 0.038;
+  orbitMetric += -velocityDir * rearWake * photonRingWarp * 0.014 * (1.0 + gravitySurge * 0.35);
 
   BlackHoleField field;
   field.lensWarp = metricWarpToPanelUv(lensMetric, visualAspect);
   field.orbitWarp = metricWarpToPanelUv(orbitMetric, visualAspect);
   field.eventHorizonMask = eventHorizon;
-  field.photonRingMask = photonRing * photonRingStrength * 1.25 * (1.0 + gravitySurge * 0.42);
-  field.gravityMask = max(gravity * 0.92, orbitShear * 0.68) * (1.0 - eventHorizon);
-  field.rimGlow = photonRing * photonRingStrength * 1.35 * (0.55 + 0.45 * orbitWave) * (1.0 + gravitySurge * 0.5);
-  field.influence = photonRing * 0.12;
+  field.photonRingMask = 0.0;
+  field.gravityMask = 0.0;
+  field.rimGlow = 0.0;
+  field.influence = 0.0;
   return field;
 }

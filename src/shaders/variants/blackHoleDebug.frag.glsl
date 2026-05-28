@@ -6,6 +6,7 @@ uniform float u_panelScale;
 uniform vec2 u_vortexPos[3];
 uniform vec2 u_vortexVel[3];
 uniform float u_vortexRadius[3];
+uniform float u_vortexCoreScale[3];
 uniform float u_vortexSpin[3];
 
 uniform float u_seed;
@@ -75,6 +76,7 @@ void main() {
       u_vortexPos[i],
       u_vortexVel[i],
       u_vortexRadius[i],
+      u_vortexCoreScale[i],
       u_vortexSpin[i],
       visualAspect,
       u_time,

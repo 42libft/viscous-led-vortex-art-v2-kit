@@ -15,6 +15,7 @@ export type DrawParams = {
     pos: Float32Array;
     vel: Float32Array;
     radius: Float32Array;
+    coreScale: Float32Array;
     spin: Float32Array;
   };
 };
@@ -29,6 +30,7 @@ type ProgramBinding = {
     vortexPos0: WebGLUniformLocation | null;
     vortexVel0: WebGLUniformLocation | null;
     vortexRadius0: WebGLUniformLocation | null;
+    vortexCoreScale0: WebGLUniformLocation | null;
     vortexSpin0: WebGLUniformLocation | null;
     seed: WebGLUniformLocation | null;
     paletteA: WebGLUniformLocation | null;
@@ -102,6 +104,7 @@ export class WebGLRenderer {
       vortexPos0: program.getOptionalUniformLocation('u_vortexPos[0]'),
       vortexVel0: program.getOptionalUniformLocation('u_vortexVel[0]'),
       vortexRadius0: program.getOptionalUniformLocation('u_vortexRadius[0]'),
+      vortexCoreScale0: program.getOptionalUniformLocation('u_vortexCoreScale[0]'),
       vortexSpin0: program.getOptionalUniformLocation('u_vortexSpin[0]'),
       seed: program.getOptionalUniformLocation('u_seed'),
       paletteA: program.getOptionalUniformLocation('u_paletteA'),
@@ -163,6 +166,7 @@ export class WebGLRenderer {
     gl.uniform2fv(uniforms.vortexPos0, params.vortices.pos);
     gl.uniform2fv(uniforms.vortexVel0, params.vortices.vel);
     gl.uniform1fv(uniforms.vortexRadius0, params.vortices.radius);
+    gl.uniform1fv(uniforms.vortexCoreScale0, params.vortices.coreScale);
     gl.uniform1fv(uniforms.vortexSpin0, params.vortices.spin);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }

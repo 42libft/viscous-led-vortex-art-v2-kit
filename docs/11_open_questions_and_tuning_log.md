@@ -424,6 +424,19 @@
 - 花びら状に見えていた二又ローブを廃止し、周回軌道へ沿う `orbitBand` / `orbitShear` 主体のwarpへ変更。
 - Event Horizonを硬い境界に戻し、`field.influence` の広域黒混ぜを止めて黒の滲みを抑えた。
 - 重力surgeを閾値的な発生ではなく、低周波の連続合成でさらに滑らかに変化させた。
+- 黒円サイズを肥大化前より小さく戻し、`fwidth` による最小限のアンチエイリアスだけを残した。
+- 重力場外周を `fieldMask` で有限化し、外側へwarpやmaskの影響が残らないようにした。
+- Photon RingをEvent Horizonから離して配置し、黒円の縁と周回軌道の揺らぎが混ざらないようにした。
+- 黒円周囲の白いリングに見えていた `photonRingMask` / `rimGlow` の可視加算を止め、周回軌道はUV warpとしてだけ残した。
+- 外側に残っていた二段目の指数減衰gravityを廃止し、`gravityBand` 一本だけを重力場/周回軌道として扱うよう変更。
+- `gravityMask` も `0.0` にして、重力場を色や発光ではなくUV warpだけで表現するようにした。
+- 黒円と重力帯の間に見えていた空白をなくすため、`gravityBand` をEvent Horizon直外から始めるよう変更。
+- 重力帯の幅を旧設定比で約1.3倍に拡張。
+- 3つのうち1つだけ黒芯を少し小さくするため、Vortexごとの `coreScale` を追加し、重力帯幅は共通半径側に残した。
+- 全shader variantへ `u_vortexCoreScale` を接続し、共通 `BlackHoleField` の呼び出しを同期した。
+- 本家比較に基づき、重力帯を均一な青い円盤として歪ませるのではなく、周囲模様を外側から拾って円周方向の筋として巻き込むwarpへ変更。
+- 進行方向の前側は二又に回り込む `frontFork`、後方は引きずりの `rearWake` として扱い、対称的なアイコン状リングを弱めた。
+- `photonRingMask` / `gravityMask` / `rimGlow` の可視加算は引き続き止め、周回軌道は色足しではなくUVサンプリングだけで表現する方針にした。
 
 理由:
 
@@ -438,6 +451,11 @@
 - 追加調整後も `npm run build` が通り、同URLをreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
 - 強度引き上げ後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
 - 周回軌道化・黒滲み抑制後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
+- 黒円/重力場境界分離後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
+- 白リング除去後も `npm run build` が通り、`http://localhost:4173/` をreloadしてerror overlay非表示、console errorなしを確認。
+- 単一重力帯化後も `npm run build` が通り、`http://localhost:4173/` をreloadしてerror overlay非表示、console errorなしを確認。
+- 重力帯の内側接続と1.3倍拡張後も `npm run build` が通り、`http://localhost:4173/` をreloadしてerror overlay非表示、console errorなしを確認。
+- 本家比較後の周回軌道warp修正後も `npm run build` が通り、`http://localhost:4173/` で全Mode切替時のerror overlay非表示、console errorなしを確認。
 
 次に試すこと:
 

@@ -18,6 +18,7 @@ export type Vortex = {
   position: Vec2;
   velocity: Vec2;
   radius: number;
+  coreScale: number;
   spin: number;
   /**
    * Debug-facing scalar (e.g. max pair pressure involving this vortex).
@@ -40,6 +41,7 @@ export type VortexUniformPayload = {
   pos: Float32Array; // vec2[3]
   vel: Float32Array; // vec2[3]
   radius: Float32Array; // float[3]
+  coreScale: Float32Array; // float[3]
   spin: Float32Array; // float[3]
 };
 
