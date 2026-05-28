@@ -10,6 +10,7 @@ export type VortexSwapState = {
   direction: number;
   elapsed: number;
   duration: number;
+  entryVelocity: Vec2;
 };
 
 export type Vortex = {
@@ -45,4 +46,3 @@ export type VortexUniformPayload = {
 export function vec2(x: number, y: number): Vec2 {
   return { x, y };
 }
-

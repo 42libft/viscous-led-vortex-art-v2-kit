@@ -114,6 +114,7 @@ void main() {
     BlackHoleField nextField = sampleBlackHoleField(
       panel.uv,
       u_vortexPos[i],
+      u_vortexVel[i],
       u_vortexRadius[i],
       u_vortexSpin[i],
       visualAspect,

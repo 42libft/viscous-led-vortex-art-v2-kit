@@ -73,21 +73,31 @@ function cross(ax: number, ay: number, bx: number, by: number): number {
 
 function computeSpeedDrift01(timeSeconds: number, id: number): number {
   const t = timeSeconds;
-  const a = 0.5 + 0.5 * Math.sin(t * 0.71 + id * 2.1);
-  const b = 0.5 + 0.5 * Math.sin(t * 0.43 + id * 3.7);
-  return 0.6 * a + 0.4 * b;
+  const a = 0.5 + 0.5 * Math.sin(t * 0.47 + id * 2.1);
+  const b = 0.5 + 0.5 * Math.sin(t * 0.23 + id * 3.7);
+  const pulse = Math.pow(0.5 + 0.5 * Math.sin(t * 0.83 + id * 5.4), 3.0);
+  return clamp(0.5 * a + 0.36 * b + 0.14 * pulse, 0, 1);
+}
+
+function computeHeadingWander(timeSeconds: number, id: number): number {
+  const t = timeSeconds;
+  return (
+    Math.sin(t * 0.31 + id * 1.7) * 0.16 +
+    Math.sin(t * 0.17 + id * 4.3) * 0.12 +
+    Math.sin(t * 0.09 + id * 6.8) * 0.2
+  );
 }
 
 function updateFreeMove(vortex: Vortex, step: number, timeSeconds: number, params: VortexSystemParams): void {
   const drift = computeSpeedDrift01(timeSeconds, vortex.id);
-  const targetSpeed = 0.03 + 0.04 * drift;
+  const targetSpeed = params.minSpeed + (params.maxSpeed - params.minSpeed) * (0.24 + 0.62 * drift);
 
   const angle = Math.atan2(vortex.velocity.y, vortex.velocity.x);
-  const wobble = (drift - 0.5) * 0.11 + Math.sin(timeSeconds * 1.9 + vortex.id * 1.3) * 0.05;
-  const nextAngle = angle + wobble * step * 4.2;
+  const wander = computeHeadingWander(timeSeconds, vortex.id);
+  const nextAngle = angle + wander * step;
 
   const currentSpeed = length(vortex.velocity.x, vortex.velocity.y);
-  const nextSpeed = currentSpeed + (targetSpeed - currentSpeed) * 0.025;
+  const nextSpeed = currentSpeed + (targetSpeed - currentSpeed) * (1 - Math.exp(-step * 0.78));
 
   vortex.velocity.x = Math.cos(nextAngle) * nextSpeed;
   vortex.velocity.y = Math.sin(nextAngle) * nextSpeed;
@@ -109,6 +119,7 @@ function updateFreeMove(vortex: Vortex, step: number, timeSeconds: number, param
 function updateSwapMotion(vortex: Vortex, step: number): void {
   const swap = vortex.swap;
   if (!swap) return;
+  const previous = vec2(vortex.position.x, vortex.position.y);
   swap.elapsed += step;
   const t = swap.duration <= 1e-6 ? 1 : clamp(swap.elapsed / swap.duration, 0, 1);
   const ease = smooth01(t);
@@ -116,7 +127,12 @@ function updateSwapMotion(vortex: Vortex, step: number): void {
   const orbitRotated = rotate(swap.orbit, angle - swap.startAngle);
   vortex.position.x = swap.center.x + orbitRotated.x;
   vortex.position.y = swap.center.y + orbitRotated.y;
+  const safeStep = Math.max(step, 1e-6);
+  vortex.velocity.x = (vortex.position.x - previous.x) / safeStep;
+  vortex.velocity.y = (vortex.position.y - previous.y) / safeStep;
   if (t >= 1) {
+    vortex.velocity.x = swap.entryVelocity.x;
+    vortex.velocity.y = swap.entryVelocity.y;
     vortex.swap = undefined;
   }
 }
@@ -204,18 +220,28 @@ export function updateVortices(args: {
       const dy = vb.position.y - va.position.y;
       const dist = Math.hypot(dx * args.physicsAspect, dy);
       const r = Math.max(va.radius, vb.radius);
-      const squeezeDist = r * 1.92;
-      const swapDist = r * 1.34;
+      const squeezeDist = r * 2.28;
+      const swapDist = r * 1.42;
       if (dist >= squeezeDist) continue;
 
       const overlap = squeezeDist - dist;
       const pressureBase = overlap / Math.max(1e-6, squeezeDist - swapDist);
+      const nx = dist > 1e-6 ? (dx * args.physicsAspect) / dist : 1;
+      const ny = dist > 1e-6 ? dy / dist : 0;
+      const relMetricVx = (vb.velocity.x - va.velocity.x) * args.physicsAspect;
+      const relMetricVy = vb.velocity.y - va.velocity.y;
+      const closingSpeed = Math.max(0, -(relMetricVx * nx + relMetricVy * ny));
+      const headOn = smooth01(clamp((closingSpeed - 0.012) / 0.056, 0, 1));
+      const deepOverlap = smooth01(clamp((pressureBase - 0.7) / 1.25, 0, 1));
 
       // Mild repulsion while pressure accumulates.
-      const squeeze = overlap * (0.028 + Math.min(pair.pressures[idx], 1.0) * 0.018);
+      const squeeze = overlap * (
+        0.022 +
+        Math.min(pair.pressures[idx], 1.0) * 0.016 +
+        headOn * 0.01 +
+        deepOverlap * 0.012
+      );
       if (dist > 1e-6) {
-        const nx = (dx * args.physicsAspect) / dist;
-        const ny = dy / dist;
         // Convert back from metric-space normal to uv-space delta.
         const pushX = (nx / Math.max(1e-6, args.physicsAspect)) * squeeze;
         const pushY = ny * squeeze;
@@ -235,7 +261,12 @@ export function updateVortices(args: {
       const crowding = clamp(1 - Math.hypot(tdx, tdy) / (r * 4.2), 0, 1);
       const confinement = Math.max(wallPressure01(va), wallPressure01(vb), crowding);
 
-      const pressureRate = (0.82 + confinement * 3.6) * params.storedPressure;
+      const pressureRate = (
+        0.82 +
+        confinement * 3.6 +
+        headOn * 2.1 +
+        deepOverlap * 1.55
+      ) * params.storedPressure;
       pair.pressures[idx] = Math.min(4.0, pair.pressures[idx] + pressureBase * pressureRate * step);
 
       if (pair.pressures[idx] > 2.15) {
@@ -262,6 +293,7 @@ export function updateVortices(args: {
           direction: dir,
           elapsed: 0,
           duration,
+          entryVelocity: vec2(va.velocity.x, va.velocity.y),
         };
         vb.swap = {
           pairId: idx,
@@ -271,10 +303,11 @@ export function updateVortices(args: {
           direction: dir,
           elapsed: 0,
           duration,
+          entryVelocity: vec2(vb.velocity.x, vb.velocity.y),
         };
 
         pair.pressures[idx] = 0;
-        pair.cooldowns[idx] = 0.72;
+        pair.cooldowns[idx] = 0.95;
       }
     }
   }

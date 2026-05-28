@@ -12,11 +12,11 @@ export class VortexSystem {
     this.vortices = createDefaultVortices();
     this.params = {
       speed: 1,
-      storedPressure: 0.24,
+      storedPressure: 0.32,
       burst: 12.5,
       reflectDamping: 0.86,
       minSpeed: 0.022,
-      maxSpeed: 0.074,
+      maxSpeed: 0.078,
       ...params,
     };
     this.pair = createDefaultPairState();
@@ -54,4 +54,3 @@ export class VortexSystem {
     }
   }
 }
-
