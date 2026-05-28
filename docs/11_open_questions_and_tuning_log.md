@@ -421,6 +421,9 @@
 - 進行方向正面のwarpを左右二又に割り、黒円の側面を回って後方へswing-byする流れを追加。
 - 黒円のEvent Horizonを見える大きさへ広げ、Photon Ring / Gravity Mask / Rim Glowの共通信号を強めた。
 - Lens / Orbit warpを大幅に引き上げ、滑らかなPattern上でも黒円周囲の引き込みが画面上で読める強さへ寄せた。
+- 花びら状に見えていた二又ローブを廃止し、周回軌道へ沿う `orbitBand` / `orbitShear` 主体のwarpへ変更。
+- Event Horizonを硬い境界に戻し、`field.influence` の広域黒混ぜを止めて黒の滲みを抑えた。
+- 重力surgeを閾値的な発生ではなく、低周波の連続合成でさらに滑らかに変化させた。
 
 理由:
 
@@ -434,6 +437,7 @@
 - GUIから全Modeへ切替後も、各shader variantでerror overlay非表示、console errorなしを確認。
 - 追加調整後も `npm run build` が通り、同URLをreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
 - 強度引き上げ後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
+- 周回軌道化・黒滲み抑制後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
 
 次に試すこと:
 
