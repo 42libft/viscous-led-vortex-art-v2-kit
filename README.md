@@ -43,6 +43,7 @@ npm run preview:host
 - Viteの `base` は `./` にしているため、`https://<USER>.github.io/<REPO>/` 形式のProject Pagesでもassetパスが崩れない。
 - `visual-references/` 内の写真・動画は `.gitignore` で除外し、Pages配信対象にしない。
 - 並列開発では作業ブランチを分け、担当範囲は `docs/13_parallel_development_handoff.md` に従う。
+- Gitの具体的な並列運用ルールは `docs/13_parallel_development_handoff.md` と `docs/14_github_pages_and_git.md` を参照する。
 
 初回公開の流れ:
 

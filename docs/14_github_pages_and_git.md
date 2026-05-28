@@ -37,7 +37,18 @@ vite.config.ts
 - Viteで `dist/` を生成し、Pages artifactとしてアップロードする。
 - Deploy jobは `github-pages` environmentへ配信する。
 
-## 4. Vite公開パス
+## 4. 並列開発でのGit運用
+
+詳しい担当境界は `docs/13_parallel_development_handoff.md` に置く。ここではGitHub / Pagesに関係する最低限の運用だけをまとめる。
+
+- `main` は公開可能な状態として扱う。
+- 作業は `feat/<area>-<topic>`、`docs/<topic>`、`integration/<topic>` などのブランチで行う。
+- `main` へのmergeはPR経由にする。
+- PRでは `npm run build` を通し、可能ならブラウザ表示も確認する。
+- `main` へmergeされるとPagesが自動更新される。
+- 壊れた表示がPagesに出た場合は、次の機能追加より復旧を優先する。
+
+## 5. Vite公開パス
 
 `vite.config.ts` の `base` は `./` にした。
 
@@ -47,7 +58,7 @@ vite.config.ts
 - ローカルの `npm run preview` でも同じ出力を確認しやすい。
 - リポジトリ名を変えても `/<REPO>/` を書き換えなくてよい。
 
-## 5. 参照素材の扱い
+## 6. 参照素材の扱い
 
 `visual-references/` は観察用であり、実行時assetではない。
 
@@ -60,7 +71,7 @@ vite.config.ts
 
 READMEや観察メモはGit管理できるが、素材そのものは明示判断なしにGitHubへ載せない。
 
-## 6. スマホ表示
+## 7. スマホ表示
 
 CSS側で以下を追加した。
 
@@ -70,7 +81,7 @@ CSS側で以下を追加した。
 
 UI側ではスマホ相当のviewportやタッチデバイスでlil-guiを初期状態で閉じる。作品本体を先に見せ、必要なときだけ設定を開くため。
 
-## 7. 初回公開手順
+## 8. 初回公開手順
 
 ```sh
 git init -b main
@@ -82,7 +93,7 @@ gh api --method POST repos/42libft/viscous-led-vortex-art-v2-kit/pages -f build_
 
 すでにリポジトリがある場合は、`origin` を既存URLに向けて `git push -u origin main` する。
 
-## 8. 今回触っていないもの
+## 9. 今回触っていないもの
 
 - Pattern shader本体。
 - Color / Move / Composition / FireflySystem / Effectの責務境界。

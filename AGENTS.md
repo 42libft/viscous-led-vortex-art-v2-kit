@@ -24,6 +24,17 @@
 - Visual referenceフォルダー内の素材を無断でWeb配信対象にしない。
 - ユーザーが明示していない限り、三号機的な制作ツール機能を追加しない。
 
+## 並列開発時のGitルール
+
+- 作業前に必ず `git status --short --branch` を確認する。
+- `main` に直接コミットしない。担当範囲ごとに短い作業ブランチを切る。
+- 1ブランチは1担当領域、1Phase、1目的に絞る。
+- ブランチ名には担当領域を入れる。例: `feat/pattern-deep-universe`、`feat/firefly-density`、`docs/spec-phase6-5`、`integration/random-auto`。
+- 他担当の未コミット変更があるファイルを編集しない。必要なら先に担当者へ確認する。
+- 自分の変更だけをstageする。`git add .` は、対象が完全に確認できている場合以外は使わない。
+- `main` へ入れる前に `npm run build` とブラウザ表示確認を行う。
+- `main` へのmerge後はGitHub Pagesへ自動配信されるため、壊れた状態をpushしない。
+
 ## 実装前に必ず読む資料
 
 1. `docs/00_final_design_decisions.md`
