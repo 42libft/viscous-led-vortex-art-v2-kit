@@ -86,7 +86,13 @@ void main() {
   vec2 movedUv = applyPatternMove(panel.uv, u_time);
   vec2 patternUv = movedUv + field.lensWarp + field.orbitWarp;
   vec3 color = sampleDebugPattern(patternUv, u_time);
-  color = applyCompositionMask(color, panel.uv);
+  if (compositionDepthLayerEnabled() > 0.5) {
+    vec3 rearColor = sampleDebugPattern(compositionDepthLayerUv(patternUv, panel.uv, u_time, -1.0), u_time);
+    vec3 frontColor = sampleDebugPattern(compositionDepthLayerUv(patternUv, panel.uv, u_time, 1.0), u_time);
+    color = blendDepthLayerComposition(rearColor, color, frontColor, panel.uv);
+  } else {
+    color = applyCompositionMask(color, panel.uv);
+  }
 
   vec2 edgeDist = min(panel.uv, 1.0 - panel.uv);
   float edge = min(edgeDist.x, edgeDist.y);

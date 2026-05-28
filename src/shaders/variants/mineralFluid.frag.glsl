@@ -124,7 +124,13 @@ void main() {
   vec2 movedUv = applyPatternMove(panel.uv, u_time);
   vec2 patternUv = movedUv + field.lensWarp + field.orbitWarp * 0.7;
   vec3 color = sampleMineral(patternUv, u_time);
-  color = applyCompositionMask(color, panel.uv);
+  if (compositionDepthLayerEnabled() > 0.5) {
+    vec3 rearColor = sampleMineral(compositionDepthLayerUv(patternUv, panel.uv, u_time, -1.0), u_time);
+    vec3 frontColor = sampleMineral(compositionDepthLayerUv(patternUv, panel.uv, u_time, 1.0), u_time);
+    color = blendDepthLayerComposition(rearColor, color, frontColor, panel.uv);
+  } else {
+    color = applyCompositionMask(color, panel.uv);
+  }
   color = mix(color, vec3(0.0), field.influence * 0.08);
   color += field.gravityMask * vec3(0.08, 0.05, 0.03);
   color += field.photonRingMask * u_rimColorBias * 0.14;

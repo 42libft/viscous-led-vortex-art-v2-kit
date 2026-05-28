@@ -144,7 +144,13 @@ void main() {
   vec2 movedUv = applyPatternMove(panel.uv, u_time);
   vec2 patternUv = movedUv + field.lensWarp * 1.28 + field.orbitWarp * 1.38;
   vec3 color = sampleLiquidCellular(patternUv, u_time);
-  color = applyCompositionMask(color, panel.uv);
+  if (compositionDepthLayerEnabled() > 0.5) {
+    vec3 rearColor = sampleLiquidCellular(compositionDepthLayerUv(patternUv, panel.uv, u_time, -1.0), u_time);
+    vec3 frontColor = sampleLiquidCellular(compositionDepthLayerUv(patternUv, panel.uv, u_time, 1.0), u_time);
+    color = blendDepthLayerComposition(rearColor, color, frontColor, panel.uv);
+  } else {
+    color = applyCompositionMask(color, panel.uv);
+  }
   color = mix(color, vec3(0.0), field.influence * 0.08);
   color += field.gravityMask * vec3(0.0, 0.025, 0.018);
   color += field.photonRingMask * u_rimColorBias * 0.14;

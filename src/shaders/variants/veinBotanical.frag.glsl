@@ -127,7 +127,13 @@ void main() {
   vec2 movedUv = applyPatternMove(panel.uv, u_time);
   vec2 patternUv = movedUv + field.lensWarp * 1.08 + field.orbitWarp * 0.92;
   vec3 color = sampleVeinBotanical(patternUv, u_time);
-  color = applyCompositionMask(color, panel.uv);
+  if (compositionDepthLayerEnabled() > 0.5) {
+    vec3 rearColor = sampleVeinBotanical(compositionDepthLayerUv(patternUv, panel.uv, u_time, -1.0), u_time);
+    vec3 frontColor = sampleVeinBotanical(compositionDepthLayerUv(patternUv, panel.uv, u_time, 1.0), u_time);
+    color = blendDepthLayerComposition(rearColor, color, frontColor, panel.uv);
+  } else {
+    color = applyCompositionMask(color, panel.uv);
+  }
   color = mix(color, vec3(0.0), field.influence * 0.1);
   color += field.gravityMask * vec3(0.03, 0.04, 0.12);
   color += field.photonRingMask * u_rimColorBias * 0.18;
