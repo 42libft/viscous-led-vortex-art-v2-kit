@@ -405,6 +405,69 @@
 - 各担当は `docs/13_parallel_development_handoff.md` の所有範囲を宣言してから作業する。
 - Integration担当はPhase 9までAuto実装に進まない。
 
+### 2026-05-28
+
+対象:
+
+- BlackHole / Vortex correct-behavior tuning
+
+変更内容:
+
+- VortexSystemの通常移動を、直線的な漂いを保ちながら低周波で加速/減速する挙動へ調整。
+- 接近圧力に、壁際、正面衝突、3点密集、深い接近の条件を加え、詰まり感から高速swapへ移りやすくした。
+- swap中だけ半周運動由来の速度をshaderへ渡し、終了後は侵入前の速度へ戻して余分な加速を付けないようにした。
+- 共通BlackHoleFieldへ `u_vortexVel` ベースの前方引き込み/後方尾、時間変化する重力surge、surge中のPhoton Ring高速化を追加。
+- 重力surgeの時間変化をさらに低周波化し、模様速度の変化がゆっくり滑らかにつながるよう調整。
+- 進行方向正面のwarpを左右二又に割り、黒円の側面を回って後方へswing-byする流れを追加。
+- 黒円のEvent Horizonを見える大きさへ広げ、Photon Ring / Gravity Mask / Rim Glowの共通信号を強めた。
+- Lens / Orbit warpを大幅に引き上げ、滑らかなPattern上でも黒円周囲の引き込みが画面上で読める強さへ寄せた。
+
+理由:
+
+- 黒円を「黒い丸」ではなく、背景模様を引っ張って曲げる重力レンズとして感じられるようにするため。
+- 押し合いからswapまでの溜めと解放を、衝突反射ではなく半周すれ違いとして見せるため。
+- 黒円挙動をMode内へ入れず、共通VortexSystem / BlackHoleFieldの責務として維持するため。
+
+結果:
+
+- `npm run build` が通り、`http://127.0.0.1:5174/` でcanvas生成、GUI表示、error overlay非表示、console errorなしを確認。
+- GUIから全Modeへ切替後も、各shader variantでerror overlay非表示、console errorなしを確認。
+- 追加調整後も `npm run build` が通り、同URLをreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
+- 強度引き上げ後も `npm run build` が通り、`http://localhost:4173/` をreloadして全Mode切替時のerror overlay非表示、console errorなしを確認。
+
+次に試すこと:
+
+- 実画面で尾の長さ、surge頻度、Photon Ringの高速感が強すぎないか確認する。
+- 必要ならPresetのBlackHoleStyle値ではなく、共通BlackHoleField内の基礎係数を微調整する。
+
+### 2026-05-28
+
+対象:
+
+- Phase 8 Effect System / artificial life hooks
+
+変更内容:
+
+- 共通shader chunk `alife.glsl` を追加し、Effect Stackから呼ぶ形で人工生命風の信号を生成するようにした。
+- glowには反応拡散/Turing pattern風の膜エッジとswarm pulseを薄く重ねた。
+- specularにはphysarum/slime mold風の走化性trailを反射ハイライトとして重ねた。
+- grainにはLife-like cellular automata latticeとcolony sporeの微細な粒状変化を混ぜた。
+- scanlineにはcellular automataとswarm pulseによる行ごとの揺らぎを加えた。
+
+理由:
+
+- 人工生命アルゴリズムをPattern Modeへ混ぜ込まず、全Mode共通の補助質感であるEffectとして扱うため。
+- FireflySystemやVortexSystemとは役割を混ぜず、Effectの4系統すべてに「生き物っぽい変化」の余地を持たせるため。
+
+結果:
+
+- 既存の `glow` / `specular` / `grain` / `scanline` の強度パラメータをそのまま使い、UIやPreset構造を増やさずに人工生命風の変調を追加した。
+
+次に試すこと:
+
+- 実画面でglowの呼吸感、specular trail、grain/scanlineのちらつきが強すぎないか確認する。
+- 重く感じる場合は、`alife.glsl` 内のswarm/slime loop数を先に落として調整する。
+
 ### YYYY-MM-DD
 
 対象:

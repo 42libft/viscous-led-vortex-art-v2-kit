@@ -1,4 +1,5 @@
 import type { ShaderVariant } from '../patterns/patternTypes';
+import alifeCommonSource from '../shaders/common/alife.glsl?raw';
 import blackHoleFieldSource from '../shaders/common/blackHoleField.glsl?raw';
 import compositionCommonSource from '../shaders/common/composition.glsl?raw';
 import effectsCommonSource from '../shaders/common/effects.glsl?raw';
@@ -27,6 +28,7 @@ export function getShaderChunks(variant: ShaderVariant): ReadonlyArray<{ label: 
     { label: 'common/blackHoleField.glsl', source: blackHoleFieldSource },
     { label: 'common/move.glsl', source: moveCommonSource },
     { label: 'common/composition.glsl', source: compositionCommonSource },
+    { label: 'common/alife.glsl', source: alifeCommonSource },
     { label: 'common/effects.glsl', source: effectsCommonSource },
     { label: 'common/fireflies.glsl', source: firefliesCommonSource },
     { label: `variants/${variant}.frag.glsl`, source: variantSources[variant] },
