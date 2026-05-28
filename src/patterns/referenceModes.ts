@@ -33,7 +33,7 @@ export const referenceModes: PatternMode[] = [
     label: 'Reference / Blue Purple Vein',
     origin: 'reference',
     family: 'vein',
-    shaderVariant: 'black-hole-debug',
+    shaderVariant: 'vein-botanical',
     defaultPresetId: 'ref-blue-purple-vein-01',
     allowedEffects: ['glow', 'specular', 'grain', 'scanline'],
   },

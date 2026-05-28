@@ -9,14 +9,16 @@ import blackHoleDebugFragmentBodySource from '../shaders/variants/blackHoleDebug
 import deepUniverseFragmentBodySource from '../shaders/variants/deepUniverse.frag.glsl?raw';
 import liquidCellularFragmentBodySource from '../shaders/variants/liquidCellular.frag.glsl?raw';
 import mineralFluidFragmentBodySource from '../shaders/variants/mineralFluid.frag.glsl?raw';
+import oilMembraneFragmentBodySource from '../shaders/variants/oilMembrane.frag.glsl?raw';
+import veinBotanicalFragmentBodySource from '../shaders/variants/veinBotanical.frag.glsl?raw';
 
 const variantSources: Record<ShaderVariant, string> = {
   'black-hole-debug': blackHoleDebugFragmentBodySource,
   'deep-universe': deepUniverseFragmentBodySource,
   'mineral-fluid': mineralFluidFragmentBodySource,
   'liquid-cellular': liquidCellularFragmentBodySource,
-  'vein-botanical': blackHoleDebugFragmentBodySource,
-  'oil-membrane': blackHoleDebugFragmentBodySource,
+  'vein-botanical': veinBotanicalFragmentBodySource,
+  'oil-membrane': oilMembraneFragmentBodySource,
 };
 
 export function getShaderChunks(variant: ShaderVariant): ReadonlyArray<{ label: string; source: string }> {

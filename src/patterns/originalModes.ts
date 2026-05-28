@@ -6,7 +6,7 @@ export const originalModes: PatternMode[] = [
     label: 'Original / Black Oil Cell WIP',
     origin: 'original',
     family: 'oil',
-    shaderVariant: 'liquid-cellular',
+    shaderVariant: 'oil-membrane',
     defaultPresetId: 'orig-black-oil-cell-01',
     allowedEffects: ['glow', 'specular', 'grain', 'scanline'],
   },
